@@ -15,6 +15,7 @@ namespace Microsoft.DotNet.SignTool
         internal readonly string FullPath;
         internal readonly SignInfo SignInfo;
         internal readonly ImmutableArray<byte> ContentHash;
+        internal readonly string WixContentFilePath;
 
         // optional file information that allows to disambiguate among multiple files with the same name:
         internal readonly string TargetFramework;
@@ -61,11 +62,21 @@ namespace Microsoft.DotNet.SignTool
 
         internal bool IsZipContainer() => IsZipContainer(FileName);
 
+        // A wix file is an Container if it has the proper extension AND the content
+        // (ie *.wixpack.zip) is available, otherwise it's treated like a normal file
+        internal bool IsWixContainer() =>
+            WixContentFilePath != null
+            && (Path.GetExtension(FileName).Equals(".msi", StringComparison.OrdinalIgnoreCase)
+                || Path.GetExtension(FileName).Equals(".exe", StringComparison.OrdinalIgnoreCase)
+                || Path.GetExtension(FileName).Equals(".wixlib", StringComparison.OrdinalIgnoreCase));
+
+        internal bool IsContainer() => IsZipContainer() || IsWixContainer();
+
         internal bool IsPackage() => IsPackage(FileName);
 
         internal bool IsPowerShellScript() => IsPowerShellScript(FileName);
 
-        internal FileSignInfo(string fullPath, ImmutableArray<byte> contentHash, SignInfo signInfo, string targetFramework = null, bool forceRepack = false)
+        internal FileSignInfo(string fullPath, ImmutableArray<byte> contentHash, SignInfo signInfo, string targetFramework = null, bool forceRepack = false, string wixContentFilePath = null)
         {
             Debug.Assert(fullPath != null);
             Debug.Assert(!contentHash.IsDefault && contentHash.Length == 256 / 8);
@@ -77,6 +88,7 @@ namespace Microsoft.DotNet.SignTool
             SignInfo = signInfo;
             TargetFramework = targetFramework;
             ForceRepack = forceRepack;
+            WixContentFilePath = wixContentFilePath;
         }
 
         public override string ToString()
