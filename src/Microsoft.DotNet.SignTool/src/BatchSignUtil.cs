@@ -131,8 +131,7 @@ namespace Microsoft.DotNet.SignTool
                     }
                     if (file.IsWixContainer())
                     {
-                        _log.LogMessage($"Packing msi container: '{file.FileName}'");
-                        _log.LogMessage($"Repacking container: '{file.FileName}'");
+                        _log.LogMessage($"Packing wix container: '{file.FileName}'");
                         _batchData.ZipDataMap[file.ContentHash].Repack(_log, _signTool.TempDir, _signTool.WixToolsPath);
                     }
                 }
