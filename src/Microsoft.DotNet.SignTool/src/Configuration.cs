@@ -157,7 +157,6 @@ namespace Microsoft.DotNet.SignTool
             _log.LogMessage("Done loading existing files from cache");
         }
 
-
         internal BatchSignInput GenerateListOfFiles()
         {
             foreach (var fullPath in _itemsToSign)
